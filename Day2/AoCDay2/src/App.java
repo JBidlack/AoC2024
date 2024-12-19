@@ -15,42 +15,30 @@ public class App {
 
             while ((fullLine = reader.readLine()) != null){
                 String[] line = fullLine.split(" ");
-                int[] lineI = new int[line.length];
-                boolean increasing = false;
-                boolean decreasing = false;
+                ArrayList<Integer> lineI = new ArrayList<>();
                 boolean valid = false;
 
                 for(int a = 0; a<line.length; a++){
-                    lineI[a] = Integer.parseInt(line[a]);
+                    lineI.add(Integer.parseInt(line[a]));
                 }
 
-                for(int i = 1; i<lineI.length; i++){
-                    
-                    if(lineI[0] > lineI[1]){
-                        decreasing = true;
-                    }
-                    if(lineI[0] < lineI[1]){
-                        increasing = true;
-                    }
-                    
-                    int diff = lineI[i]-lineI[i-1];
-                    diff = Math.abs(diff);
+                valid = removedOne(lineI);
 
-                    if(diff < 1 || diff > 3){
-                        valid = removedOne(lineI, i);
-                        break;
+                if(!valid){
+                    for (int i=0; i < lineI.size(); i++){
+                        ArrayList<Integer> list = new ArrayList<>();
+                        for (int j=0; j<lineI.size(); j++){
+                            if(j != i){
+                                list.add(lineI.get(j));
+                            }
+                        }
+                        valid = removedOne(list);
+                        if(valid){
+                            break;
+                        }
                     }
-
-                    if(lineI[i]-lineI[i-1] > 0 && decreasing){
-                        valid = removedOne(lineI, i);
-                        break;
-                    }
-                    if(lineI[i]-lineI[i-1] < 0 && increasing){
-                        valid = removedOne(lineI, i);
-                        break;
-                    }
-                    valid = true;
                 }
+
                 if(valid){
                     total++;
                 }
@@ -64,43 +52,33 @@ public class App {
         }
     }
 
-    public static boolean removedOne(int[] seq, int prob){
-        boolean removed = false;
+    public static boolean removedOne(ArrayList<Integer> seq){
+        
         boolean increasing = false;
         boolean decreasing = false;
 
-        for(int i = 1; i<seq.length; i++){
-            if(seq[i-1] > seq[i]){
-                decreasing = true;
-            }
-            if(seq[i-1] < seq[i]){
-                increasing = true;
-            }
-            for (int j=1; j<seq.length; j++){       
-                if(j == prob) {
-                    continue;
-                } 
-                
-                int diff = seq[j]-seq[j-1];
-                diff = Math.abs(diff);
-
-                if(diff < 1 || diff > 3){
-                    return false;
-                }
-
-                if(seq[j]-seq[j-1] > 0 && decreasing){
-                    return false;
-                }
-                if(seq[j]-seq[j-1] < 0 && increasing){
-                    return false;
-                }
-            }
+        if(seq.get(0) > seq.get(1)){
+            decreasing = true;
         }
-        return true;
-    }
-    public static boolean isDecValid(int[] seq){
-        for (int i = 1; i<seq.length-1; i++){
+        if(seq.get(0) < seq.get(1)){
+            increasing = true;
+        }
+
+        for(int i = 1; i < seq.size(); i++){
             
+            int diff = seq.get(i)-seq.get(i-1);
+            diff = Math.abs(diff);
+
+            if(diff < 1 || diff > 3){
+                return false;
+            }
+
+            if(seq.get(i)-seq.get(i-1) > 0 && decreasing){
+                return false;
+            }
+            if(seq.get(i)-seq.get(i-1) < 0 && increasing){
+                return false;
+            }
         }
         return true;
     }
