@@ -8,7 +8,7 @@ public class day3 {
     public static void main(String[] args) {
         String mul = "mul\\((\\d+),(\\d+)\\)";
         String doit = "do\\(\\)";
-        String dontdoit = "don\\'t\\(\\)";
+        String dontdoit = "don't\\(\\)";
         String input = "";
         File file = new File("C:\\Users\\jbidlack\\Documents\\NetBeansProjects\\AoC2024\\Day3\\text.txt");
 
@@ -23,16 +23,46 @@ public class day3 {
             Pattern pattern = Pattern.compile(mul);
             Pattern yesPat = Pattern.compile(doit);
             Pattern noPat = Pattern.compile(dontdoit);
-            Matcher matcher = pattern.matcher(input);
-            Matcher yesMatch = yesPat.matcher(input);
-            Matcher noMatch = noPat.matcher(input);
 
-            System.out.println(matcher);
+            String mem = input.toString();
 
-            while(matcher.find()){
-                int a = Integer.parseInt(matcher.group(1));
-                int b = Integer.parseInt(matcher.group(2));
-                total += a*b;
+            Matcher matcher = pattern.matcher(mem);
+            Matcher yesMatch = yesPat.matcher(mem);
+            Matcher noMatch = noPat.matcher(mem);
+
+            boolean isEnabled = true;
+
+            int position = 0;
+
+            while(position < mem.length()){
+                int next = matcher.find(position) ? matcher.start():Integer.MAX_VALUE;
+                int nextDo = yesMatch.find(position) ? yesMatch.start():Integer.MAX_VALUE;
+                int nextDont = noMatch.find(position) ? noMatch.start():Integer.MAX_VALUE;
+
+                int instruction = Math.min(next, Math.min(nextDo, nextDont));
+
+                if (instruction == Integer.MAX_VALUE){
+                    break;
+                }
+
+                if(instruction == next){
+                    if(isEnabled){
+                        int a = Integer.parseInt(matcher.group(1));
+                        int b = Integer.parseInt(matcher.group(2));
+                        total += a*b;
+                    }
+                    position = matcher.end();
+                }
+                else if ( instruction == nextDo){
+                    isEnabled = true;
+                    position = yesMatch.end();
+                }
+                else if (instruction == nextDont){
+                    isEnabled= false;
+                    position = noMatch.end();
+                }
+
+
             }
 
             System.out.println(total);
